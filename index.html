@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganaderia EJD — Venta permanente de Ganado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #131211;
+    --verde-claro: #2f477a;
+    --verde-menta: #f5f4dc;
+    --tierra: #8B5E3C;
+    --tierra-claro: #C49A6C;
+    --crema: #F5F0E8;
+    --blanco: #FDFCFA;
+    --gris: #6B6B6B;
+    --gris-claro: #E8E5DF;
+    --negro: #1A1A1A;
+    --acento: #e6c50b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'Barlow',sans-serif; background:var(--crema); color:var(--negro); overflow-x:hidden; }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(253,252,250,0.96); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--gris-claro);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 5vw; height:70px;
+  }
+  .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; cursor:pointer; }
+  .nav-logo-text { font-family:'Playfair Display',serif; font-size:22px; color:var(--verde); font-weight:700; }
+  .nav-logo-sub { font-size:10px; color:var(--tierra-claro); letter-spacing:2px; text-transform:uppercase; margin-top:-4px; display:block; font-weight:500; }
+  .nav-links { display:flex; gap:0; list-style:none; align-items:center; }
+  .nav-links a { text-decoration:none; color:var(--gris); font-size:12px; font-weight:500; letter-spacing:0.5px; padding:8px 20px; border-radius:6px; transition:color 0.2s,background 0.2s; text-transform:uppercase; cursor:pointer; }
+  .nav-links a:hover { color:var(--verde); background:var(--verde-menta); }
+  .nav-links a.active { color:var(--verde); font-weight:600; }
+  .nav-cta { background:var(--verde)!important; color:var(--blanco)!important; border-radius:8px!important; padding:10px 22px!important; }
+  .nav-cta:hover { background:var(--verde-claro)!important; }
+  .nav-admin-btn { background:transparent; border:1.5px solid var(--tierra-claro); color:var(--tierra); padding:8px 18px; border-radius:8px; font-family:'Barlow',sans-serif; font-size:12px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; margin-left:8px; }
+  .nav-admin-btn:hover { background:var(--tierra-claro); color:var(--blanco); }
+
+  /* SECTIONS */
+  .page-section { display:none; }
+  .page-section.active { display:block; }
+
+  /* HERO */
+  .hero-wrap {
+    min-height:100vh;
+    background: linear-gradient(160deg,rgba(97,107,90,0) 0%,rgba(15,17,14,0.45) 60%,transparent 100%), url('https://images.tcdn.com.br/img/img_prod/774746/bambolet_da_serrote_nelore_pintado_10945_1_c91bf9723edb6b5f7550fb505fadd9b8.jpg') center/cover no-repeat;
+    display:flex; align-items:center; padding:0 5vw; padding-top:70px; position:relative;
+  }
+  .hero-content { max-width:600px; }
+  .hero-badge { display:inline-block; background:rgba(212,160,23,0.2); border:1px solid var(--acento); color:var(--acento); font-size:11px; letter-spacing:3px; text-transform:uppercase; padding:6px 16px; border-radius:20px; margin-bottom:24px; font-weight:600; }
+  .hero-title { font-family:'Playfair Display',serif; font-size:clamp(42px,6vw,76px); color:var(--blanco); line-height:1.1; margin-bottom:20px; font-weight:700; }
+  .hero-title em { font-style:italic; color:var(--acento); }
+  .hero-desc { font-size:17px; color:rgba(253,252,250,0.8); line-height:1.7; margin-bottom:36px; font-weight:300; max-width:480px; }
+  .hero-btns { display:flex; gap:14px; flex-wrap:wrap; }
+  .btn-primary { background:var(--acento); color:var(--negro); padding:14px 32px; border-radius:8px; text-decoration:none; font-weight:600; font-size:14px; letter-spacing:0.5px; text-transform:uppercase; transition:transform 0.2s,background 0.2s; display:inline-block; border:none; cursor:pointer; font-family:'Barlow',sans-serif; }
+  .btn-primary:hover { background:#e6b828; transform:translateY(-2px); }
+  .btn-outline { border:1.5px solid rgba(253,252,250,0.5); color:var(--blanco); padding:14px 32px; border-radius:8px; font-weight:500; font-size:14px; letter-spacing:0.5px; text-transform:uppercase; transition:all 0.2s; display:inline-block; background:transparent; cursor:pointer; font-family:'Barlow',sans-serif; }
+  .btn-outline:hover { border-color:var(--blanco); background:rgba(253,252,250,0.1); }
+  .hero-stats { position:absolute; bottom:40px; right:5vw; display:flex; gap:40px; }
+  .stat { text-align:center; }
+  .stat-num { font-family:'Playfair Display',serif; font-size:36px; color:var(--blanco); font-weight:700; line-height:1; }
+  .stat-label { font-size:12px; color:rgba(253,252,250,0.6); letter-spacing:1px; text-transform:uppercase; margin-top:4px; }
+
+  /* SECTION HEADER */
+  .section-header { text-align:center; margin-bottom:56px; }
+  .section-tag { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--tierra); font-weight:600; margin-bottom:12px; display:block; }
+  .section-title { font-family:'Playfair Display',serif; font-size:clamp(32px,4vw,48px); color:var(--verde); font-weight:700; line-height:1.2; margin-bottom:14px; }
+  .section-desc { font-size:16px; color:var(--gris); max-width:540px; margin:0 auto; line-height:1.7; }
+  .section-divider { width:60px; height:3px; background:linear-gradient(90deg,var(--acento),var(--tierra-claro)); margin:16px auto 0; border-radius:2px; }
+
+  /* CATALOGO */
+  .catalogo-wrap { padding:100px 5vw; background:var(--blanco); }
+  .filtros { display:flex; gap:10px; justify-content:center; margin-bottom:48px; flex-wrap:wrap; }
+  .filtro-btn { padding:8px 20px; border:1.5px solid var(--gris-claro); background:transparent; border-radius:20px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:500; color:var(--gris); cursor:pointer; transition:all 0.2s; text-transform:uppercase; letter-spacing:0.5px; }
+  .filtro-btn:hover,.filtro-btn.activo { background:var(--verde); border-color:var(--verde); color:var(--blanco); }
+  .grid-animales { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:28px; }
+
+  /* CARD */
+  .animal-card { background:var(--blanco); border-radius:16px; border:1px solid var(--gris-claro); overflow:hidden; transition:transform 0.25s,box-shadow 0.25s; cursor:pointer; }
+  .animal-card:hover { transform:translateY(-6px); box-shadow:0 20px 48px rgba(45,80,22,0.12); }
+  .card-imagen { position:relative; height:220px; background:var(--verde-menta); overflow:hidden; }
+  .card-imagen img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+  .animal-card:hover .card-imagen img { transform:scale(1.05); }
+  .card-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--verde-menta),#d4e6c0); font-size:4rem; }
+  .card-badge { position:absolute; top:14px; left:14px; background:var(--verde); color:var(--blanco); font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; padding:5px 12px; border-radius:20px; }
+  .card-disponible { position:absolute; top:14px; right:14px; width:10px; height:10px; background:#4CAF50; border-radius:50%; border:2px solid var(--blanco); box-shadow:0 0 0 3px rgba(76,175,80,0.3); }
+  .card-body { padding:20px; }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+  .card-nombre { font-family:'Playfair Display',serif; font-size:20px; color:var(--negro); font-weight:700; line-height:1.2; }
+  .card-precio { font-family:'Playfair Display',serif; font-size:22px; color:var(--verde-claro); font-weight:700; white-space:nowrap; margin-left:12px; }
+  .card-raza { font-size:12px; color:var(--tierra); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+  .card-raza::before { content:''; display:inline-block; width:16px; height:2px; background:var(--tierra-claro); }
+  .card-desc { font-size:14px; color:var(--gris); line-height:1.6; margin-bottom:16px; }
+  .card-specs { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:18px; padding:14px; background:var(--crema); border-radius:8px; }
+  .spec-item { display:flex; flex-direction:column; }
+  .spec-label { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--gris); margin-bottom:2px; font-weight:500; }
+  .spec-value { font-size:13px; font-weight:600; color:var(--negro); }
+  .card-footer { display:flex; gap:10px; }
+  .btn-ver { flex:1; padding:10px; background:var(--verde); color:var(--blanco); border:none; border-radius:8px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:background 0.2s; }
+  .btn-ver:hover { background:var(--verde-claro); }
+  .btn-contactar { padding:10px 16px; background:transparent; color:var(--tierra); border:1.5px solid var(--tierra-claro); border-radius:8px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:all 0.2s; }
+  .btn-contactar:hover { background:var(--tierra-claro); color:var(--blanco); }
+
+  /* FEATURES */
+  .features-wrap { padding:100px 5vw; background:var(--verde-menta); }
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:28px; }
+  .feature-card { background:var(--blanco); padding:32px 24px; border-radius:14px; text-align:center; border:1px solid rgba(74,124,47,0.15); transition:transform 0.2s; }
+  .feature-card:hover { transform:translateY(-4px); }
+  .feature-icon { width:56px; height:56px; background:var(--verde-menta); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; font-size:24px; }
+  .feature-title { font-family:'Playfair Display',serif; font-size:18px; color:var(--verde); margin-bottom:10px; font-weight:700; }
+  .feature-desc { font-size:14px; color:var(--gris); line-height:1.7; }
+
+  /* CONTACTO */
+  .contacto-wrap { padding:100px 5vw; background:var(--blanco); }
+  .contacto-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; max-width:1000px; margin:0 auto; }
+  .contacto-info h3 { font-family:'Playfair Display',serif; font-size:28px; color:var(--verde); margin-bottom:16px; font-weight:700; }
+  .contacto-info p { font-size:15px; color:var(--gris); line-height:1.7; margin-bottom:28px; }
+  .contacto-dato { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+  .contacto-icono { width:42px; height:42px; background:var(--verde-menta); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px; }
+  .contacto-dato-txt span { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--tierra); font-weight:600; display:block; }
+  .contacto-dato-txt p { font-size:15px; color:var(--negro); font-weight:500; margin:2px 0 0; }
+  .form-grupo { margin-bottom:18px; }
+  .form-grupo label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--gris); font-weight:600; margin-bottom:8px; }
+  .form-grupo input,.form-grupo select,.form-grupo textarea { width:100%; padding:12px 16px; border:1.5px solid var(--gris-claro); border-radius:8px; font-family:'Barlow',sans-serif; font-size:14px; color:var(--negro); background:var(--crema); transition:border-color 0.2s; outline:none; }
+  .form-grupo input:focus,.form-grupo select:focus,.form-grupo textarea:focus { border-color:var(--tierra); background:var(--blanco); }
+  .form-grupo textarea { height:100px; resize:vertical; }
+  .form-submit { width:100%; padding:14px; background:var(--verde); color:var(--blanco); border:none; border-radius:8px; font-family:'Barlow',sans-serif; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:1px; cursor:pointer; transition:background 0.2s; }
+  .form-submit:hover { background:var(--verde-claro); }
+
+  /* FOOTER */
+  footer { background:var(--verde); color:rgba(253,252,250,0.7); padding:40px 5vw; text-align:center; }
+  footer .footer-logo { font-family:'Playfair Display',serif; font-size:24px; color:var(--blanco); margin-bottom:8px; display:block; }
+  footer p { font-size:13px; margin-bottom:4px; }
+  footer .footer-links { display:flex; justify-content:center; gap:24px; margin-top:20px; flex-wrap:wrap; }
+  footer .footer-links a { color:rgba(253,252,250,0.6); text-decoration:none; font-size:12px; text-transform:uppercase; letter-spacing:1px; transition:color 0.2s; cursor:pointer; }
+  footer .footer-links a:hover { color:var(--acento); }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+  .modal-overlay.open { display:flex; }
+  .modal-box { background:var(--blanco); border-radius:16px; border:1px solid var(--gris-claro); padding:2.5rem; width:100%; max-width:420px; margin:1rem; position:relative; animation:modalIn 0.3s ease; box-shadow:0 24px 60px rgba(0,0,0,0.18); }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.93) translateY(-10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--gris); font-size:1.3rem; cursor:pointer; }
+  .modal-close:hover { color:var(--negro); }
+  .modal-logo { text-align:center; margin-bottom:1.5rem; }
+  .modal-logo span { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:var(--verde); display:block; }
+  .modal-logo small { font-size:0.65rem; color:var(--tierra-claro); letter-spacing:2px; text-transform:uppercase; }
+  .modal-title { font-family:'Playfair Display',serif; color:var(--verde); font-size:1.1rem; margin-bottom:1.5rem; text-align:center; }
+  .login-error { display:none; background:#fdecea; border:1px solid #f4a0a8; color:#c0392b; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:1rem; text-align:center; }
+  .mfg { margin-bottom:1rem; }
+  .mfg label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--gris); font-weight:600; margin-bottom:6px; }
+  .mfg input { width:100%; padding:11px 14px; border:1.5px solid var(--gris-claro); border-radius:8px; font-family:'Barlow',sans-serif; font-size:14px; color:var(--negro); background:var(--crema); transition:border-color 0.2s; outline:none; }
+  .mfg input:focus { border-color:var(--tierra); background:var(--blanco); }
+
+  /* ADMIN */
+  #admin-panel { display:none; min-height:calc(100vh - 70px); background:var(--crema); padding:2.5rem 0; }
+  #admin-panel.active { display:block; }
+  .admin-container { max-width:1100px; margin:0 auto; padding:0 2rem; }
+  .admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:2px solid var(--tierra-claro); }
+  .admin-header h2 { font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--verde); }
+  .admin-header p { font-size:0.85rem; color:var(--gris); }
+  .btn-danger { background:transparent; border:1.5px solid #c0392b; color:#c0392b; padding:9px 20px; border-radius:8px; font-family:'Barlow',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .btn-danger:hover { background:#c0392b; color:#fff; }
+  .btn-success { background:var(--tierra); border:none; color:#fff; padding:10px 22px; border-radius:8px; font-family:'Barlow',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .btn-success:hover { background:var(--tierra-claro); }
+  .admin-form-card { background:var(--blanco); border-radius:14px; padding:2rem; margin-bottom:2.5rem; box-shadow:0 3px 15px rgba(0,0,0,0.06); border:1px solid var(--gris-claro); }
+  .admin-form-title { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--verde); margin-bottom:1.5rem; }
+  .admin-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+  .admin-form-grid .full-width { grid-column:1/-1; }
+  .afg label { display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--gris); margin-bottom:.4rem; }
+  .afg input,.afg textarea,.afg select { width:100%; border:1.5px solid var(--gris-claro); border-radius:8px; padding:10px 14px; font-family:'Barlow',sans-serif; font-size:14px; color:var(--negro); transition:border 0.2s; outline:none; background:var(--crema); }
+  .afg input:focus,.afg textarea:focus,.afg select:focus { border-color:var(--tierra); background:var(--blanco); }
+  .afg textarea { resize:vertical; min-height:85px; }
+  .img-preview-wrap { border:2px dashed var(--tierra-claro); border-radius:10px; padding:1rem; text-align:center; cursor:pointer; min-height:100px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.5rem; background:var(--crema); transition:border-color 0.2s; }
+  .img-preview-wrap:hover { border-color:var(--tierra); }
+  .img-preview-wrap img { max-height:130px; max-width:100%; border-radius:8px; object-fit:cover; }
+  .img-preview-wrap p { font-size:13px; color:var(--gris); }
+  .admin-list-title { font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--verde); margin-bottom:1.2rem; }
+  .admin-animal-row { background:var(--blanco); border-radius:12px; padding:1.2rem 1.5rem; margin-bottom:1rem; display:flex; align-items:center; gap:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid var(--gris-claro); border-left:4px solid var(--tierra); }
+  .admin-row-img { width:72px; height:56px; border-radius:8px; overflow:hidden; background:var(--verde-menta); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
+  .admin-row-img img { width:100%; height:100%; object-fit:cover; }
+  .admin-row-info { flex:1; min-width:0; }
+  .admin-row-info strong { display:block; font-family:'Playfair Display',serif; font-size:1rem; color:var(--verde); }
+  .admin-row-info span { font-size:.8rem; color:var(--gris); }
+  .admin-row-price { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:700; color:var(--tierra); white-space:nowrap; }
+  .admin-row-actions { display:flex; gap:.6rem; }
+  .btn-edit { background:rgba(139,94,60,0.1); border:1px solid rgba(139,94,60,0.3); color:var(--tierra); padding:7px 14px; border-radius:8px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'Barlow',sans-serif; }
+  .btn-edit:hover { background:var(--tierra); color:#fff; }
+  .btn-delete { background:rgba(192,57,43,0.08); border:1px solid rgba(192,57,43,0.3); color:#c0392b; padding:7px 14px; border-radius:8px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'Barlow',sans-serif; }
+  .btn-delete:hover { background:#c0392b; color:#fff; }
+  .admin-empty { text-align:center; padding:2.5rem; color:var(--gris); font-size:.9rem; background:var(--blanco); border-radius:12px; border:1.5px dashed var(--gris-claro); }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:2rem; right:2rem; background:var(--verde); color:var(--blanco); padding:1rem 1.5rem; border-radius:10px; border-left:4px solid var(--acento); font-size:.9rem; z-index:99999; transform:translateY(80px); opacity:0; transition:all 0.35s; pointer-events:none; font-family:'Barlow',sans-serif; font-weight:500; }
+  .toast.show { transform:translateY(0); opacity:1; }
+
+  @media(max-width:768px){
+    .contacto-grid{grid-template-columns:1fr;gap:40px;}
+    .hero-stats{display:none;}
+    .nav-links{display:none;}
+    .admin-form-grid{grid-template-columns:1fr;}
+    .admin-form-grid .full-width{grid-column:1;}
+    .admin-animal-row{flex-wrap:wrap;}
+  }
+  .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio entre la imagen y el texto */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-logo-img {
+  width: 48px;   /* Ancho igual al SVG original */
+  height: 48px;  /* Alto igual al SVG original */
+  object-fit: contain; /* Evita que la imagen se deforme */
+  border-radius: 50%;  /* Solo si quieres que tu imagen sea circular */
+}
+
+.nav-logo-text {
+  display: block;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.nav-logo-sub {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+<a class="nav-logo" onclick="showSection('inicio')">
+  <img src="../Imagenes/Logo Ganaderia EJD.png" alt="Logo Ganadería EJD" class="nav-logo-img">
+  
+  <div>
+    <span class="nav-logo-text">Ganaderia EJD</span>
+    <span class="nav-logo-sub">Venta permanente de Ganado</span>
+  </div>
+</a>
+  <ul class="nav-links">
+    <li><a class="active" id="nav-inicio" onclick="showSection('inicio')">Inicio</a></li>
+    <li><a id="nav-catalogo" onclick="showSection('catalogo')">Catálogo</a></li>
+    <li><a id="nav-nosotros" onclick="showSection('nosotros')">Nosotros</a></li>
+    <li><a id="nav-contacto" class="nav-cta" onclick="showSection('contacto')">Contacto</a></li>
+  </ul>
+  <button class="nav-admin-btn" onclick="openLoginModal()">⚙ Admin</button>
+</nav>
+
+<!-- MAIN -->
+<main id="main-content">
+
+  <!-- INICIO -->
+  <div id="section-inicio" class="page-section active">
+    <div class="hero-wrap">
+      <div class="hero-content">
+        <span class="hero-badge">★ Ganado Certificado de Primera</span>
+        <h1 class="hero-title">Ganado de raza,<br>calidad <em>garantizada</em></h1>
+        <p class="hero-desc">Más de 20 años conectando productores con compradores. Seleccionamos cada animal con los más altos estándares de salud, genética y productividad.</p>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="showSection('catalogo')">Ver Catálogo</button>
+          <button class="btn-outline" onclick="showSection('contacto')">Consultar Precio</button>
+        </div>
+      </div>
+      <div class="hero-stats" id="hero-stats-box"></div>
+    </div>
+    <div class="features-wrap">
+      <div class="section-header">
+        <span class="section-tag">Por qué elegirnos</span>
+        <h2 class="section-title">Compromiso con la calidad</h2>
+        <p class="section-desc">Trabajamos directamente con criadores certificados para garantizar la trazabilidad y salud de cada animal.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">🩺</div><div class="feature-title">Sanidad Certificada</div><p class="feature-desc">Todos los animales cuentan con vacunación completa, certificado ICA y pruebas de brucelosis y tuberculosis.</p></div>
+        <div class="feature-card"><div class="feature-icon">🧬</div><div class="feature-title">Genética Comprobada</div><p class="feature-desc">Trabajamos con registros zootécnicos y genealogías verificadas para asegurar el potencial productivo.</p></div>
+        <div class="feature-card"><div class="feature-icon">🚛</div><div class="feature-title">Transporte Incluido</div><p class="feature-desc">Contamos con transporte especializado para el traslado seguro de animales a nivel nacional.</p></div>
+        <div class="feature-card"><div class="feature-icon">🤝</div><div class="feature-title">Asesoría Post-Venta</div><p class="feature-desc">Nuestro equipo técnico le acompaña durante los primeros 30 días de adaptación del animal en su finca.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATALOGO -->
+  <div id="section-catalogo" class="page-section">
+    <div class="catalogo-wrap">
+      <div class="section-header">
+        <span class="section-tag">Nuestros Animales</span>
+        <h2 class="section-title">Catálogo de Ganado</h2>
+        <p class="section-desc">Cada animal cuenta con ficha técnica completa, historial de vacunación y certificado de sanidad.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="filtros" id="filter-bar"><button class="filtro-btn activo" onclick="filterAnimals('todos',this)">Todos</button></div>
+      <div class="grid-animales" id="catalog-grid"></div>
+    </div>
+  </div>
+
+  <!-- NOSOTROS -->
+  <div id="section-nosotros" class="page-section">
+    <div class="features-wrap" style="padding-top:120px;">
+      <div class="section-header">
+        <span class="section-tag">Quiénes somos</span>
+        <h2 class="section-title">Ganaderia EJD</h2>
+        <p class="section-desc">Más de 20 años de experiencia en la comercialización de ganado selecto en Colombia. Nuestra pasión es conectar a los mejores criadores con compradores exigentes.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">🩺</div><div class="feature-title">Sanidad Certificada</div><p class="feature-desc">Todos los animales cuentan con vacunación completa, certificado ICA y pruebas de brucelosis y tuberculosis.</p></div>
+        <div class="feature-card"><div class="feature-icon">🧬</div><div class="feature-title">Genética Comprobada</div><p class="feature-desc">Trabajamos con registros zootécnicos y genealogías verificadas para asegurar el potencial productivo.</p></div>
+        <div class="feature-card"><div class="feature-icon">🚛</div><div class="feature-title">Transporte Incluido</div><p class="feature-desc">Contamos con transporte especializado para el traslado seguro de animales a nivel nacional.</p></div>
+        <div class="feature-card"><div class="feature-icon">🤝</div><div class="feature-title">Asesoría Post-Venta</div><p class="feature-desc">Nuestro equipo técnico le acompaña durante los primeros 30 días de adaptación del animal en su finca.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACTO -->
+  <div id="section-contacto" class="page-section">
+    <div class="contacto-wrap">
+      <div class="section-header">
+        <span class="section-tag">Hablemos</span>
+        <h2 class="section-title">Contáctenos</h2>
+        <p class="section-desc">¿Interesado en algún ejemplar? Déjenos sus datos y un asesor le contactará en menos de 24 horas.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="contacto-grid">
+        <div class="contacto-info">
+          <h3>Estamos para atenderle</h3>
+          <p>Visítenos en nuestra finca o comuníquese por cualquiera de estos canales. También atendemos en ferias ganaderas regionales.</p>
+          <div class="contacto-dato"><div class="contacto-icono">📍</div><div class="contacto-dato-txt"><span>Ubicación</span><p>Tenjo, Cundinamarca — Colombia</p></div></div>
+          <div class="contacto-dato"><div class="contacto-icono">📞</div><div class="contacto-dato-txt"><span>Teléfono</span><p>+57 310 456 7890</p></div></div>
+          <div class="contacto-dato"><div class="contacto-icono">✉️</div><div class="contacto-dato-txt"><span>Correo</span><p>ventas@ganaderiaEJD.co</p></div></div>
+          <div class="contacto-dato"><div class="contacto-icono">🕘</div><div class="contacto-dato-txt"><span>Horario</span><p>Lunes a Sábado, 7am – 5pm</p></div></div>
+        </div>
+        <div>
+          <div class="form-grupo"><label>Nombre Completo</label><input type="text" id="c-nombre" placeholder="Juan Carlos Rodríguez"></div>
+          <div class="form-grupo"><label>Celular / WhatsApp</label><input type="tel" id="c-tel" placeholder="+57 300 000 0000"></div>
+          <div class="form-grupo"><label>Animal de Interés</label><select id="contact-animal-select"><option value="">Seleccione...</option></select></div>
+          <div class="form-grupo"><label>Mensaje</label><textarea id="c-msg" placeholder="Cuéntenos sobre su finca, número de animales que busca o cualquier pregunta..."></textarea></div>
+          <button class="form-submit" onclick="handleContact()">Enviar Consulta →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div class="admin-container">
+    <div class="admin-header">
+      <div><h2>⚙ Panel de Administración</h2><p>Gestiona el catálogo de animales de Ganaderia EJD</p></div>
+      <button class="btn-danger" onclick="logoutAdmin()">✕ Cerrar Sesión</button>
+    </div>
+    <div class="admin-form-card">
+      <div class="admin-form-title" id="form-title">✚ Agregar Nuevo Animal</div>
+      <div class="admin-form-grid">
+        <div class="afg"><label>Nombre del Animal *</label><input type="text" id="f-nombre" placeholder="Ej: Toro Angus Negro"></div>
+        <div class="afg"><label>Raza *</label><input type="text" id="f-raza" placeholder="Ej: Angus, Holstein, Brahman..."></div>
+        <div class="afg"><label>Categoría</label>
+          <select id="f-categoria">
+            <option value="carne">Carne</option>
+            <option value="leche">Leche</option>
+            <option value="doble">Doble Propósito</option>
+            <option value="pie">Pie de Cría</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="afg"><label>Precio de Venta (COP) *</label><input type="number" id="f-precio" placeholder="Ej: 4800000"></div>
+        <div class="afg"><label>Edad</label><input type="text" id="f-edad" placeholder="Ej: 3 años"></div>
+        <div class="afg"><label>Peso</label><input type="text" id="f-peso" placeholder="Ej: 620 kg"></div>
+        <div class="afg"><label>Sexo</label><select id="f-sexo"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select></div>
+        <div class="afg"><label>Dato extra (producción, registro...)</label><input type="text" id="f-extra" placeholder="Ej: 28 L/día, Registro Zootécnico"></div>
+        <div class="afg full-width"><label>Descripción</label><textarea id="f-descripcion" placeholder="Detalles del animal: características, sanidad, condición..."></textarea></div>
+        <div class="afg full-width">
+          <label>Imagen del Animal</label>
+          <div class="img-preview-wrap" onclick="document.getElementById('f-imagen').click()" id="img-preview-area">
+            <p>📷 Clic para seleccionar imagen (JPG, PNG, WEBP)</p>
+            <p style="font-size:11px;color:#bbb;">Máx. 5MB recomendado</p>
+          </div>
+          <input type="file" id="f-imagen" accept="image/*" style="display:none" onchange="previewImage(this)">
+          <input type="hidden" id="f-imagen-data">
+        </div>
+        <div class="afg full-width"><label>O pegar URL de imagen</label><input type="text" id="f-imagen-url" placeholder="https://ejemplo.com/imagen.jpg" oninput="previewUrl(this.value)"></div>
+      </div>
+      <div style="display:flex;gap:1rem;margin-top:1.5rem;justify-content:flex-end;">
+        <button class="btn-danger" id="cancel-edit-btn" style="display:none" onclick="cancelEdit()">Cancelar</button>
+        <button class="btn-success" id="save-btn" onclick="saveAnimal()">✓ Guardar Animal</button>
+      </div>
+    </div>
+    <div class="admin-list-title">Animales en Catálogo (<span id="count-label">0</span>)</div>
+    <div id="admin-list"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">Ganaderia EJD</span>
+  <p>Comercio de Ganado Selecto · Tenjo, Cundinamarca · Colombia</p>
+  <p style="margin-top:4px;font-size:12px;">© 2026 GanaderiaEJD. Todos los derechos reservados.</p>
+  <div class="footer-links">
+    <a onclick="showSection('inicio')">Inicio</a>
+    <a onclick="showSection('catalogo')">Catálogo</a>
+    <a onclick="showSection('nosotros')">Nosotros</a>
+    <a onclick="showSection('contacto')">Contacto</a>
+  </div>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    <div class="modal-logo">
+      <span>Ganaderia EJD</span>
+      <small>Panel Administrativo</small>
+    </div>
+    <div class="modal-title">Iniciar Sesión</div>
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+    <div class="mfg"><label>Usuario</label><input type="text" id="login-user" placeholder="admin" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="mfg"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="form-submit" style="margin-top:1rem;" onclick="doLogin()">Ingresar al Panel →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let animals = JSON.parse(localStorage.getItem('ejd_animals')||'[]');
+let editingId = null;
+let isAdmin = false;
+const ADMIN_USER='admin', ADMIN_PASS='ejd2025';
+const CAT_LABELS={carne:'Carne',leche:'Leche',doble:'Doble Propósito',pie:'Pie de Cría',otro:'Otro'};
+const CAT_COLORS={carne:'background:#131211',leche:'background:#8B5E3C',doble:'background:#e6c50b;color:#1A1A1A',pie:'background:#6B4226',otro:'background:#6B6B6B'};
+
+function showSection(name){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('admin-panel').classList.remove('active');
+  document.getElementById('main-content').style.display='block';
+  const sec=document.getElementById('section-'+name);
+  if(sec)sec.classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  const nav=document.getElementById('nav-'+name);
+  if(nav)nav.classList.add('active');
+  if(name==='catalogo')renderCatalog();
+  if(name==='contacto')populateContactSelect();
+  if(name==='inicio')updateStats();
+  window.scrollTo(0,0);
+}
+
+function updateStats(){
+  const cats=[...new Set(animals.map(a=>a.categoria))].length;
+  document.getElementById('hero-stats-box').innerHTML=`
+    <div class="stat"><div class="stat-num">${animals.length}</div><div class="stat-label">Animales</div></div>
+    <div class="stat"><div class="stat-num">${cats||0}</div><div class="stat-label">Categorías</div></div>
+    <div class="stat"><div class="stat-num">15+</div><div class="stat-label">Años</div></div>`;
+}
+
+function openLoginModal(){
+  if(isAdmin){openAdminPanel();return;}
+  document.getElementById('login-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('login-user').focus(),100);
+}
+function closeLoginModal(){
+  document.getElementById('login-modal').classList.remove('open');
+  document.getElementById('login-error').style.display='none';
+}
+function doLogin(){
+  const u=document.getElementById('login-user').value;
+  const p=document.getElementById('login-pass').value;
+  if(u===ADMIN_USER&&p===ADMIN_PASS){isAdmin=true;closeLoginModal();openAdminPanel();toast('✓ Bienvenido al panel de administración');}
+  else document.getElementById('login-error').style.display='block';
+}
+function logoutAdmin(){
+  isAdmin=false;
+  document.getElementById('admin-panel').classList.remove('active');
+  document.getElementById('main-content').style.display='block';
+  showSection('inicio');
+  toast('Sesión cerrada correctamente');
+}
+function openAdminPanel(){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('main-content').style.display='none';
+  document.getElementById('admin-panel').classList.add('active');
+  renderAdminList();window.scrollTo(0,0);
+}
+
+function previewImage(input){
+  if(!input.files||!input.files[0])return;
+  const r=new FileReader();
+  r.onload=e=>{document.getElementById('f-imagen-data').value=e.target.result;document.getElementById('f-imagen-url').value='';showPrev(e.target.result);};
+  r.readAsDataURL(input.files[0]);
+}
+function previewUrl(url){if(!url)return;document.getElementById('f-imagen-data').value=url;showPrev(url);}
+function showPrev(src){document.getElementById('img-preview-area').innerHTML='<img src="'+src+'"><p style="font-size:11px;color:#bbb;margin-top:6px">Clic para cambiar</p>';}
+
+function saveAnimal(){
+  const nombre=document.getElementById('f-nombre').value.trim();
+  const raza=document.getElementById('f-raza').value.trim();
+  const categoria=document.getElementById('f-categoria').value;
+  const precio=parseFloat(document.getElementById('f-precio').value);
+  const edad=document.getElementById('f-edad').value.trim();
+  const peso=document.getElementById('f-peso').value.trim();
+  const sexo=document.getElementById('f-sexo').value;
+  const extra=document.getElementById('f-extra').value.trim();
+  const desc=document.getElementById('f-descripcion').value.trim();
+  const img=document.getElementById('f-imagen-data').value;
+  if(!nombre||!raza||!precio){toast('⚠ Completa los campos obligatorios (*)');return;}
+  const a={nombre,raza,categoria,precio,edad,peso,sexo,extra,desc,img};
+  if(editingId!==null){
+    const i=animals.findIndex(x=>x.id===editingId);
+    if(i>-1)animals[i]={...animals[i],...a};
+    cancelEdit();toast('✓ Animal actualizado correctamente');
+  } else {
+    a.id=Date.now();animals.push(a);toast('✓ Animal agregado al catálogo');resetForm();
+  }
+  saveData();renderAdminList();
+}
+
+function editAnimal(id){
+  const a=animals.find(x=>x.id===id);if(!a)return;editingId=id;
+  document.getElementById('f-nombre').value=a.nombre;
+  document.getElementById('f-raza').value=a.raza;
+  document.getElementById('f-categoria').value=a.categoria;
+  document.getElementById('f-precio').value=a.precio;
+  document.getElementById('f-edad').value=a.edad||'';
+  document.getElementById('f-peso').value=a.peso||'';
+  document.getElementById('f-sexo').value=a.sexo||'Macho';
+  document.getElementById('f-extra').value=a.extra||'';
+  document.getElementById('f-descripcion').value=a.desc||'';
+  document.getElementById('f-imagen-data').value=a.img||'';
+  document.getElementById('f-imagen-url').value='';
+  if(a.img)showPrev(a.img);
+  document.getElementById('form-title').textContent='✏ Editar Animal';
+  document.getElementById('save-btn').textContent='✓ Actualizar Animal';
+  document.getElementById('cancel-edit-btn').style.display='inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function cancelEdit(){
+  editingId=null;resetForm();
+  document.getElementById('form-title').textContent='✚ Agregar Nuevo Animal';
+  document.getElementById('save-btn').textContent='✓ Guardar Animal';
+  document.getElementById('cancel-edit-btn').style.display='none';
+}
+function deleteAnimal(id){
+  if(!confirm('¿Seguro que deseas eliminar este animal del catálogo?'))return;
+  animals=animals.filter(a=>a.id!==id);saveData();renderAdminList();toast('Animal eliminado del catálogo');
+}
+function resetForm(){
+  ['f-nombre','f-raza','f-precio','f-edad','f-peso','f-extra','f-descripcion','f-imagen-data','f-imagen-url'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('f-categoria').value='carne';
+  document.getElementById('f-sexo').value='Macho';
+  document.getElementById('f-imagen').value='';
+  document.getElementById('img-preview-area').innerHTML='<p>📷 Clic para seleccionar imagen (JPG, PNG, WEBP)</p><p style="font-size:11px;color:#bbb;">Máx. 5MB recomendado</p>';
+}
+function saveData(){localStorage.setItem('ejd_animals',JSON.stringify(animals));}
+
+function renderAdminList(){
+  const list=document.getElementById('admin-list');
+  document.getElementById('count-label').textContent=animals.length;
+  if(!animals.length){list.innerHTML='<div class="admin-empty">No hay animales registrados aún. ¡Agrega el primero arriba!</div>';return;}
+  list.innerHTML=animals.map(a=>`
+    <div class="admin-animal-row">
+      <div class="admin-row-img">${a.img?'<img src="'+a.img+'" alt="'+a.nombre+'">':getCatEmoji(a.categoria)}</div>
+      <div class="admin-row-info"><strong>${a.nombre}</strong><span>${a.raza} &bull; ${CAT_LABELS[a.categoria]||a.categoria}${a.edad?' &bull; '+a.edad:''}${a.peso?' &bull; '+a.peso:''}</span></div>
+      <div class="admin-row-price">$${Number(a.precio).toLocaleString('es-CO')}</div>
+      <div class="admin-row-actions">
+        <button class="btn-edit" onclick="editAnimal(${a.id})">✎ Editar</button>
+        <button class="btn-delete" onclick="deleteAnimal(${a.id})">🗑 Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+
+let currentFilter='todos';
+function renderCatalog(){
+  const grid=document.getElementById('catalog-grid');
+  const filtered=currentFilter==='todos'?animals:animals.filter(a=>a.categoria===currentFilter);
+  updateFilterBar();
+  if(!animals.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--gris);"><p style="font-size:2.5rem;margin-bottom:1rem;">🐄</p><p style="font-family:Playfair Display,serif;font-size:1.2rem;">El catálogo está vacío.<br>Pronto agregaremos nuevos animales.</p></div>';return;}
+  if(!filtered.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--gris);"><p style="font-size:2rem;margin-bottom:1rem;">🔍</p><p>No hay animales en esta categoría.</p></div>';return;}
+  grid.innerHTML=filtered.map(a=>`
+    <div class="animal-card">
+      <div class="card-imagen">
+        ${a.img?'<img src="'+a.img+'" alt="'+a.nombre+'">':`<div class="card-placeholder">${getCatEmoji(a.categoria)}</div>`}
+        <span class="card-badge" style="${CAT_COLORS[a.categoria]||'background:var(--gris)'}">${CAT_LABELS[a.categoria]||a.categoria}</span>
+        <div class="card-disponible"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top"><div class="card-nombre">${a.nombre}</div><div class="card-precio">$${Number(a.precio).toLocaleString('es-CO')}</div></div>
+        <div class="card-raza">${a.raza}</div>
+        <p class="card-desc">${a.desc||'Animal en excelentes condiciones, con documentación sanitaria al día. Contáctenos para más información.'}</p>
+        ${(a.edad||a.peso||a.sexo||a.extra)?`<div class="card-specs">
+          ${a.edad?`<div class="spec-item"><span class="spec-label">Edad</span><span class="spec-value">${a.edad}</span></div>`:''}
+          ${a.peso?`<div class="spec-item"><span class="spec-label">Peso</span><span class="spec-value">${a.peso}</span></div>`:''}
+          ${a.sexo?`<div class="spec-item"><span class="spec-label">Sexo</span><span class="spec-value">${a.sexo}</span></div>`:''}
+          ${a.extra?`<div class="spec-item"><span class="spec-label">Info</span><span class="spec-value">${a.extra}</span></div>`:''}
+        </div>`:''}
+        <div class="card-footer">
+          <button class="btn-ver" onclick="verFicha(${a.id})">Ver Ficha</button>
+          <button class="btn-contactar" onclick="contactAbout('${a.nombre.replace(/'/g,"\\'")}')">Contactar</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function verFicha(id){
+  const a=animals.find(x=>x.id===id);if(!a)return;
+  alert(`📋 FICHA: ${a.nombre}\n🐄 Raza: ${a.raza}\n📂 Categoría: ${CAT_LABELS[a.categoria]||a.categoria}${a.edad?'\n📅 Edad: '+a.edad:''}${a.peso?'\n⚖️ Peso: '+a.peso:''}${a.sexo?'\n♂️ Sexo: '+a.sexo:''}${a.extra?'\nℹ️ '+a.extra:''}\n💰 Precio: $${Number(a.precio).toLocaleString('es-CO')} COP\n\n${a.desc||''}`);
+}
+
+function updateFilterBar(){
+  const cats=[...new Set(animals.map(a=>a.categoria))];
+  const bar=document.getElementById('filter-bar');
+  bar.innerHTML=`<button class="filtro-btn ${currentFilter==='todos'?'activo':''}" onclick="filterAnimals('todos',this)">Todos</button>`;
+  cats.forEach(c=>{bar.innerHTML+=`<button class="filtro-btn ${currentFilter===c?'activo':''}" onclick="filterAnimals('${c}',this)">${getCatEmoji(c)} ${CAT_LABELS[c]||c}</button>`;});
+}
+function filterAnimals(cat,btn){
+  currentFilter=cat;
+  document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  renderCatalog();
+}
+function contactAbout(name){
+  showSection('contacto');
+  setTimeout(()=>{const s=document.getElementById('contact-animal-select');for(let o of s.options){if(o.value===name){s.value=name;break;}}},100);
+}
+function populateContactSelect(){
+  const s=document.getElementById('contact-animal-select');
+  s.innerHTML='<option value="">Seleccione...</option>';
+  animals.forEach(a=>{s.innerHTML+=`<option value="${a.nombre}">${a.nombre} (${a.raza})</option>`;});
+  if(!animals.length)s.innerHTML+='<option value="otro">Consulta general</option>';
+}
+function getCatEmoji(c){return{carne:'🐄',leche:'🐄',doble:'🐄',pie:'🐂',otro:'🐾'}[c]||'🐄';}
+
+function handleContact(){
+  if(!document.getElementById('c-nombre').value){toast('⚠ Por favor ingresa tu nombre');return;}
+  toast('✓ ¡Mensaje enviado! Un asesor le contactará pronto.');
+  ['c-nombre','c-tel','c-msg'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('contact-animal-select').selectedIndex=0;
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+showSection('inicio');
+</script>
+</body>
+</html>
